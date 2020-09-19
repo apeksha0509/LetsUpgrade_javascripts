@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<style type="text/css">
+		table{
+			width: 80%;
+			margin: auto;text-align: center;
+			border-spacing: 0px;
+			border:1px solid #222;
+		}
+		table tr td,table tr th{
+			border-right: 2px solid #222;
+			line-height: 2
+		}
+	</style>
+</head>
+<body>
+<!-- <form action="javascript:void(0)" method="post" onsubmit="saveEmp()" name="empForm"> -->
+<!-- <form  method="post" onsubmit="saveEmp(event)" name="empForm"> -->
+<form  method="post" onsubmit="return saveEmp()" name="empForm">
+	<input type="text" name="empname" placeholder="Enter Employee Name">
+	<input type="text" name="empcity" placeholder="Enter Employee City">
+	<input type="text" name="empage" placeholder="Enter Employee Age">
+	<input type="submit" id="btnsave" value="Save">
+	<input type="button" id="btnupdate"  value="Update" onclick="updateData()">
+</form>
+<input type="text" name="search" placeholder="Serach Value"><button onclick="searchData()">Search</button>
+<table>
+	<thead>
+		<tr>
+			<th>Sr</th>
+			<th onclick="sortData('empname',sortStatus.empname=!sortStatus.empname)">Name</th>
+			<th onclick="sortData('empcity',sortStatus.empcity=!sortStatus.empcity)">City</th>
+			<th onclick="sortData('empage',sortStatus.empage=!sortStatus.empage)">Age</th>
+			<th>Delete</th>
+			<th>Edit</th>
+		</tr>
+	</thead>
+	<tbody id="mydata">
+		
+	</tbody>
+</table>
+<script type="text/javascript">
+	var empArray=[
+	{empname:'Mohan',empcity:'Ujjian',empage:23},
+	{empname:'Aman',empcity:'Dewas',empage:24},
+	{empname:'Rohit',empcity:'Bhopal',empage:28},
+	{empname:'Ankit',empcity:'Indore',empage:22},
+	{empname:'Raj',empcity:'Bhopal',empage:29},
+	]
+	// '  Indore MP    '
+	var sortStatus={empname:false,empcity:false,empage:false}
+	var mydata=document.getElementById('mydata')	
+	var btnsave=document.getElementById('btnsave')
+	var btnupdate=document.getElementById('btnupdate')
+	btnupdate.style.display="none"
+	function saveEmp() {
+		console.log(empForm)
+		// e.preventDefault()
+		// console.log(empForm)
+		// console.log(empForm.length)
+		var emp={}
+		for (var i = 0; i <empForm.length; i++) {
+			if(empForm[i].name!="")
+			emp[empForm[i].name]=empForm[i].value.trim()
+			
+			}			
+			// console.log(Object.values(emp).filter(value=>value=="").length)
+			// var len=Object.values(emp).filter(function (value,index) {
+			// 	if(value=="")
+			// 		return value
+			// }).length
+			var len=Object.values(emp).filter(value=>value=="").length
+			console.log("Blank Value : "+len)
+			if(Object.values(emp).filter(value=>value=="").length>0){
+				alert("Please enter all field first")
+			}
+			else{
+						empArray.push(emp)
+						empForm.reset();
+						empForm.empname.focus()
+					}
+			showData()
+			return false
+	}
+	showData()
+	function showData() {
+		mydata.innerHTML=""
+		empArray.forEach(function (row,index) {
+			mydata.innerHTML+="<tr><td>"+(index+1)+"</td><td>"+row.empname+"</td><td>"+row.empcity+"</td><td>"+row.empage+"</td><td><button onclick='removeData("+index+")'>Del</button></td><td><button onclick='editData("+index+")'>Edit</button></td></tr>"
+		})
+	}
+	function removeData(index) {
+		var status=confirm('do u want to delete Record')
+		if(status){
+			empArray.splice(index,1)
+		}
+		showData();
+	}
+	var myindex=-1
+	function editData(index) {
+
+		for (var i = 0; i <empForm.length; i++) {
+			if(empForm[i].name!="")
+				empForm[i].value=empArray[index][empForm[i].name]			
+			}
+			btnupdate.style.display="inline-block"
+			btnsave.style.display="none"
+			myindex=index;
+	}
+	function updateData() {
+		var emp={}
+		for (var i = 0; i <empForm.length; i++) {
+			if(empForm[i].name!="")
+			emp[empForm[i].name]=empForm[i].value
+			
+			}
+		empArray.splice(myindex,1,emp)
+		showData();
+		myindex=-1;
+			btnupdate.style.display="none"
+			btnsave.style.display="inline-block"	
+			empForm.reset();
+	}
+	function sortData(field,status) {
+		
+		empArray.sort(function (x,y) {
+			var exp=(status)?x[field]>y[field]:x[field]<y[field]
+			if(exp)
+				return 1;
+			else if(x[field]==y[field])
+				return 0
+			else
+				return -1
+		})
+		showData()
+	}
+</script>
+</body>
+</html>
